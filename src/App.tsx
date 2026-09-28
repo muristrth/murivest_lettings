@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { HomePage } from '@/pages/HomePage';
@@ -20,6 +20,9 @@ import {
   TenantMaintenancePage,
   TenantDocumentsPage,
 } from '@/pages/TenantPortal';
+
+// Lazy so the Studio bundle only loads on /studio.
+const StudioPage = lazy(() => import('@/pages/StudioPage'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -67,6 +70,9 @@ function App() {
         <Route path="/portal/tenant/payments" element={<TenantPaymentsPage />} />
         <Route path="/portal/tenant/maintenance" element={<TenantMaintenancePage />} />
         <Route path="/portal/tenant/documents" element={<TenantDocumentsPage />} />
+
+        {/* Sanity Studio */}
+        <Route path="/studio/*" element={<Suspense fallback={null}><StudioPage /></Suspense>} />
 
         {/* 404 */}
         <Route path="*" element={<NotFoundPage />} />

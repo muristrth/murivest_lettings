@@ -29,6 +29,7 @@ function sanityToListing(p: SanityProperty): PropertyListing {
     bathrooms: p.bathrooms,
     rent: p.rent,
     price: p.price,
+    displayPrice: p.displayPrice,
     listingType: p.listingType,
     availability: p.availability,
     featured: p.featured,
@@ -327,7 +328,9 @@ export function PropertiesIndexPage() {
                       </div>
                       <div className="flex items-center justify-between pt-4 border-t border-stone-100">
                         <div>
-                          {property.listingType === 'sale' && property.price ? (
+                          {property.displayPrice ? (
+                            <div className="font-serif text-xl text-navy-900">{property.displayPrice}</div>
+                          ) : property.listingType === 'sale' && property.price ? (
                             <>
                               <div className="font-serif text-xl text-navy-900">{formatKES(property.price)}</div>
                               <div className="text-xs text-stone-400">sale price</div>
@@ -456,7 +459,9 @@ export function PropertyDetailPage() {
               </div>
             </div>
             <div className="text-right">
-              {property.listingType === 'sale' && property.price ? (
+              {property.displayPrice ? (
+                <div className="font-serif text-3xl md:text-4xl text-gold-300">{property.displayPrice}</div>
+              ) : property.listingType === 'sale' && property.price ? (
                 <>
                   <div className="font-serif text-3xl md:text-4xl text-gold-300">{formatKES(property.price)}</div>
                   <div className="text-sm text-ivory-200/50">sale price</div>
@@ -582,8 +587,8 @@ export function PropertyDetailPage() {
                     <div className="text-xs text-stone-400 mb-2">{p.location}</div>
                     <h3 className="font-serif text-base text-navy-900 mb-3 group-hover:text-navy-700 transition-colors leading-snug">{p.title}</h3>
                     <div className="font-serif text-lg text-navy-900">
-                      {p.listingType === 'sale' && p.price ? formatKES(p.price) : `${formatKES(p.rent)}`}
-                      <span className="text-xs text-stone-400 font-sans">{p.listingType === 'sale' ? '' : '/mo'}</span>
+                      {p.displayPrice || (p.listingType === 'sale' && p.price ? formatKES(p.price) : formatKES(p.rent))}
+                      <span className="text-xs text-stone-400 font-sans">{p.displayPrice || p.listingType === 'sale' ? '' : '/mo'}</span>
                     </div>
                   </div>
                 </Link>

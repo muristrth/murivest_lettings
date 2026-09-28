@@ -14,13 +14,7 @@ const NAV = [
   { label: 'Approvals', path: '/portal/landlord/approvals', icon: 'CheckSquare' },
 ];
 
-const MOCK_PROPERTIES = [
-  { id: 'lp1', name: 'Karen Villa — Garden', location: 'Karen, Nairobi', tenant: 'J. Mwangi', rent: 280000, status: 'Leased', collected: 280000, arrears: 0 },
-  { id: 'lp2', name: 'Westlands Office Floor 12', location: 'Westlands, Nairobi', tenant: 'Savanna Capital Ltd', rent: 672000, status: 'Leased', collected: 672000, arrears: 0 },
-  { id: 'lp3', name: 'Kilimani Apartment 4B', location: 'Kilimani, Nairobi', tenant: 'A. Patel', rent: 150000, status: 'Leased', collected: 150000, arrears: 0 },
-  { id: 'lp4', name: 'Lavington Townhouse 7', location: 'Lavington, Nairobi', tenant: 'Under Application', rent: 350000, status: 'Under Application', collected: 0, arrears: 0 },
-  { id: 'lp5', name: 'Riverside Retail Unit', location: 'Riverside Drive', tenant: 'Vacant', rent: 187000, status: 'Available', collected: 0, arrears: 0 },
-];
+const MOCK_PROPERTIES: Array<Record<string, unknown>> = [];
 
 const MOCK_STATEMENTS = [
   { month: 'September 2026', collected: 1102000, expenses: 84500, net: 1017500, status: 'Paid' },

@@ -13,25 +13,11 @@ const NAV = [
   { label: 'Documents', path: '/portal/tenant/documents', icon: 'FileText' },
 ];
 
-const MOCK_PAYMENTS = [
-  { id: 'pay1', period: 'September 2026', amount: 280000, date: '2026-09-01', status: 'Paid', method: 'M-Pesa' },
-  { id: 'pay2', period: 'August 2026', amount: 280000, date: '2026-08-03', status: 'Paid', method: 'Bank Transfer' },
-  { id: 'pay3', period: 'July 2026', amount: 280000, date: '2026-07-01', status: 'Paid', method: 'M-Pesa' },
-  { id: 'pay4', period: 'June 2026', amount: 280000, date: '2026-06-02', status: 'Paid', method: 'M-Pesa' },
-];
+const MOCK_PAYMENTS: Array<Record<string, unknown>> = [];
 
-const MOCK_MAINTENANCE = [
-  { id: 'm1', title: 'Kitchen tap replacement', date: '2026-09-15', status: 'Resolved', priority: 'Low', description: 'The kitchen tap was leaking. Plumber attended and replaced the washer.' },
-  { id: 'm2', title: 'AC not cooling properly', date: '2026-09-20', status: 'In Progress', priority: 'Medium', description: 'Air conditioner in the living room is not cooling. Technician scheduled to inspect.' },
-];
+const MOCK_MAINTENANCE: Array<Record<string, unknown>> = [];
 
-const MOCK_DOCUMENTS = [
-  { id: 'td1', name: 'Lease Agreement — Karen Villa.pdf', type: 'Lease', date: '2026-01-15', size: '2.4 MB' },
-  { id: 'td2', name: 'Move-In Inspection Report.pdf', type: 'Inspection', date: '2026-01-15', size: '3.6 MB' },
-  { id: 'td3', name: 'September 2026 Receipt.pdf', type: 'Receipt', date: '2026-09-01', size: '0.3 MB' },
-  { id: 'td4', name: 'August 2026 Receipt.pdf', type: 'Receipt', date: '2026-08-03', size: '0.3 MB' },
-  { id: 'td5', name: 'House Rules & Policies.pdf', type: 'Policy', date: '2026-01-15', size: '0.5 MB' },
-];
+const MOCK_DOCUMENTS: Array<Record<string, unknown>> = [];
 
 export function TenantDashboardPage() {
   const nextPayment = { amount: 280000, dueDate: 'October 1, 2026', daysAway: 7 };

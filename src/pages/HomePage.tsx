@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, Building2, KeySquare, Lightbulb, TrendingUp, Globe,
@@ -6,7 +7,8 @@ import {
 } from 'lucide-react';
 import { Seo } from '@/components/Seo';
 import { SectionHeader, CtaBand } from '@/components/ui';
-import { SERVICES, LIFECYCLE_STAGES, PROPERTIES, formatKES } from '@/lib/data';
+import { SERVICES, LIFECYCLE_STAGES, formatKES } from '@/lib/data';
+import { fetchFeaturedProperties, isSanityConfigured } from '@/lib/sanity';
 
 const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   Building2, KeySquare, Lightbulb, TrendingUp, Globe, ArrowRightCircle,
@@ -14,7 +16,41 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export function HomePage() {
-  const featuredProperties = PROPERTIES.filter((p) => p.featured).slice(0, 3);
+  const [featuredProperties, setFeaturedProperties] = useState<Array<{ id: string; slug: string; title: string; type: string; location: string; rent: number; rentPeriod?: string; displayPrice?: string | null; availability: string; featured: boolean; images: { url: string; alt: string }[] }>>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      if (!isSanityConfigured) {
+        if (!cancelled) setFeaturedProperties([]);
+        return;
+      }
+      try {
+        const data = await fetchFeaturedProperties(3);
+        if (!cancelled) {
+          setFeaturedProperties(data.map((p) => ({
+            id: p._id,
+            slug: p.slug.current,
+            title: p.title,
+            type: p.propertyType,
+            location: p.location,
+            rent: p.rent,
+            rentPeriod: 'month',
+            displayPrice: p.displayPrice,
+            availability: p.availability,
+            featured: p.featured,
+            images: p.images,
+          })));
+        }
+      } catch (error) {
+        console.error('Unable to load featured properties', error);
+        if (!cancelled) setFeaturedProperties([]);
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <>
@@ -204,8 +240,14 @@ export function HomePage() {
                   </h3>
                   <div className="flex items-center justify-between pt-4 border-t border-stone-100">
                     <div>
-                      <div className="font-serif text-xl text-navy-900">{formatKES(property.rent)}</div>
-                      <div className="text-xs text-stone-400">per {property.rentPeriod}</div>
+                      {property.displayPrice ? (
+                        <div className="font-serif text-xl text-navy-900">{property.displayPrice}</div>
+                      ) : (
+                        <>
+                          <div className="font-serif text-xl text-navy-900">{formatKES(property.rent)}</div>
+                          <div className="text-xs text-stone-400">per {property.rentPeriod}</div>
+                        </>
+                      )}
                     </div>
                     <div className="text-xs text-forest-600 font-medium">{property.availability}</div>
                   </div>

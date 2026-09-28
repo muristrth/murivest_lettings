@@ -283,7 +283,7 @@ export const LIFECYCLE_STAGES = [
 
 export type PropertyType = 'Residential' | 'Commercial';
 export type ListingType = 'lease' | 'sale';
-export type PropertyAvailability = 'Available' | 'Under Application' | 'Leased' | 'Sold';
+export type PropertyAvailability = 'Available' | 'Under Application' | 'Leased' | 'Sold' | 'Coming Soon';
 
 export interface PropertyListing {
   id: string;
@@ -298,6 +298,7 @@ export interface PropertyListing {
   rent: number;
   rentPeriod?: string;
   price?: number | null;
+  displayPrice?: string | null;
   listingType: ListingType;
   availability: PropertyAvailability;
   featured: boolean;
@@ -307,68 +308,7 @@ export interface PropertyListing {
   createdAt: string;
 }
 
-export const PROPERTIES: PropertyListing[] = [
-  {
-    id: 'prop-001',
-    slug: 'nairobi-parkview-apartment',
-    title: 'Nairobi Parkview Apartment',
-    type: 'Residential',
-    subtype: 'Apartment',
-    location: 'Westlands, Nairobi',
-    area: '1,250 sq ft',
-    bedrooms: 2,
-    bathrooms: 2,
-    rent: 180000,
-    rentPeriod: 'month',
-    listingType: 'lease',
-    availability: 'Available',
-    featured: true,
-    description: 'Bright two-bedroom apartment with secure parking, balcony views and access to a shared gym.',
-    amenities: ['Parking', 'Gym', '24/7 Security', 'Balcony'],
-    images: [{ url: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=900&q=80', alt: 'Apartment exterior' }],
-    createdAt: '2026-01-01T00:00:00.000Z',
-  },
-  {
-    id: 'prop-002',
-    slug: 'kilimani-villa',
-    title: 'Kilimani Family Villa',
-    type: 'Residential',
-    subtype: 'Villa',
-    location: 'Kilimani, Nairobi',
-    area: '2,800 sq ft',
-    bedrooms: 4,
-    bathrooms: 3,
-    rent: 320000,
-    rentPeriod: 'month',
-    listingType: 'lease',
-    availability: 'Available',
-    featured: true,
-    description: 'Spacious family villa with landscaped garden, staff quarters and a quiet residential setting.',
-    amenities: ['Garden', 'Staff Quarters', 'Parking', 'Swimming Pool'],
-    images: [{ url: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=900&q=80', alt: 'Villa exterior' }],
-    createdAt: '2026-02-01T00:00:00.000Z',
-  },
-  {
-    id: 'prop-003',
-    slug: 'upper-hill-office-floor',
-    title: 'Upper Hill Office Floor',
-    type: 'Commercial',
-    subtype: 'Office Floor',
-    location: 'Upper Hill, Nairobi',
-    area: '1,600 sq ft',
-    bedrooms: null,
-    bathrooms: 2,
-    rent: 540000,
-    rentPeriod: 'month',
-    listingType: 'lease',
-    availability: 'Under Application',
-    featured: true,
-    description: 'Premium office floor in a business tower with lifts, reception and close access to transport links.',
-    amenities: ['Lift Access', 'Reception', 'Parking', 'Backup Power'],
-    images: [{ url: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80', alt: 'Office space interior' }],
-    createdAt: '2026-03-01T00:00:00.000Z',
-  },
-];
+export const PROPERTIES: PropertyListing[] = [];
 
 export const RESIDENTIAL_SUBTYPES = [
   'Apartment',
