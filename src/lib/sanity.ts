@@ -48,7 +48,7 @@ export interface SanityProperty {
 }
 
 // Studio documents are "propertylet"; "property" kept for any legacy docs.
-const baseFilter = `_type in ["propertylet", "property"] && defined(slug.current)`;
+const baseFilter = `_type in ["propertylet"] && defined(slug.current)`;
 
 const propertyFields = `
   _id,
