@@ -517,7 +517,7 @@ function PropertyBriefCard({ property, market, eagerImage = false }: PropertyBri
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-            <SubIcon className="w-12 h-12 text-stone-300" />
+            <SubIcon className="w-3 h-3 text-stone-300" />
             <span className="text-xs tracking-[0.2em] text-stone-400">
               {classificationFor(property.subtype)}
             </span>
@@ -526,11 +526,11 @@ function PropertyBriefCard({ property, market, eagerImage = false }: PropertyBri
 
         {/* Restrained overlay: classification + listing type */}
         <div className="absolute top-4 left-4 flex gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] bg-white/95 text-navy-900 backdrop-blur-sm">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[7px] font-semibold tracking-[0.14em] bg-white/95 text-navy-900 backdrop-blur-sm">
             <SubIcon className="w-3 h-3" />
             {classificationFor(property.subtype)}
           </span>
-          <span className="inline-flex items-center px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] bg-navy-950/85 text-ivory-50 backdrop-blur-sm">
+          <span className="inline-flex items-center px-3 py-1.5 text-[7px] font-semibold tracking-[0.14em] bg-navy-950/85 text-ivory-50 backdrop-blur-sm">
             {listingTypeLabel(property.listingType)}
           </span>
         </div>
@@ -749,7 +749,7 @@ export function PropertiesIndexPage() {
       {/* HERO — editorial, institutional */}
       <PageHero
         label="PROPERTY INTELLIGENCE"
-        title="Commercial Properties for Lease & Sale"
+        title="Commercial Properties for Lease"
         subtitle="Murivest provides discreet access to selected commercial property opportunities — office, retail, warehouse and industrial assets — for occupiers, owners and institutional requirements across the United Kingdom, UAE, Kenya, South Africa and the United States."
         breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Properties', path: '/properties' }]}
       />
