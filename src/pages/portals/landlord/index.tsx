@@ -1,7 +1,5 @@
-﻿export default function LandlordPage() {
-  return (
-    <div>
-      <h1>landlord</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function PortalsLandlordPage() {
+  return <ArchitecturePage path="/portals/landlord" />;
 }

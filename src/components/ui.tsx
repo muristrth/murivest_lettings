@@ -83,13 +83,19 @@ export function PageHero({
     <section className="bg-navy-950 section-padding pt-32 pb-16 lg:pt-40 lg:pb-20">
       <div className="max-w-9xl mx-auto">
         {breadcrumbs && (
-          <nav className="flex items-center gap-2 text-xs text-stone-500 mb-6">
-            {breadcrumbs.map((bc, i) => (
-              <span key={bc.path} className="flex items-center gap-2">
-                {i > 0 && <span className="text-stone-600">/</span>}
-                <Link to={bc.path} className="hover:text-gold-300 transition-colors">{bc.name}</Link>
-              </span>
-            ))}
+          <nav aria-label="Breadcrumb" className="mb-6">
+            <ol className="flex flex-wrap items-center gap-2 text-xs text-stone-400">
+              {breadcrumbs.map((bc, i) => (
+                <li key={bc.path} className="flex items-center gap-2">
+                  {i > 0 && <span className="text-stone-600" aria-hidden="true">/</span>}
+                  {i === breadcrumbs.length - 1 ? (
+                    <span aria-current="page" className="text-stone-300">{bc.name}</span>
+                  ) : (
+                    <Link to={bc.path} className="hover:text-gold-300 transition-colors">{bc.name}</Link>
+                  )}
+                </li>
+              ))}
+            </ol>
           </nav>
         )}
         {label && <div className="label-text text-gold-300 mb-4">{label}</div>}

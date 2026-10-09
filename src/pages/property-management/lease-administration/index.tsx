@@ -1,7 +1,5 @@
-﻿export default function LeaseAdministrationPage() {
-  return (
-    <div>
-      <h1>lease-administration</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function PropertyManagementLeaseAdministrationPage() {
+  return <ArchitecturePage path="/property-management/lease-administration" />;
 }

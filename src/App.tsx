@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, lazy, Suspense } from 'react';
+import { ARCHITECTURE_ROUTES } from '@/routes/architectureRoutes';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { HomePage } from '@/pages/HomePage';
@@ -32,6 +33,10 @@ function ScrollToTop() {
   return null;
 }
 
+function RouteFallback() {
+  return <div className="min-h-[60vh]" role="status" aria-label="Loading page" />;
+}
+
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col">
@@ -57,6 +62,21 @@ function App() {
         <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
         <Route path="/landlords" element={<PublicLayout><LandlordsPage /></PublicLayout>} />
         <Route path="/tenants" element={<PublicLayout><TenantsPage /></PublicLayout>} />
+
+        {/* Architecture pages (lazy-loaded; see src/routes/architectureRoutes.tsx) */}
+        {ARCHITECTURE_ROUTES.map(({ path, Component }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <PublicLayout>
+                <Suspense fallback={<RouteFallback />}>
+                  <Component />
+                </Suspense>
+              </PublicLayout>
+            }
+          />
+        ))}
 
         {/* Landlord portal */}
         <Route path="/portal/landlord" element={<LandlordDashboardPage />} />

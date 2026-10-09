@@ -1,7 +1,5 @@
-﻿export default function OwnerReportingPage() {
-  return (
-    <div>
-      <h1>owner-reporting</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function PropertyManagementOwnerReportingPage() {
+  return <ArchitecturePage path="/property-management/owner-reporting" />;
 }

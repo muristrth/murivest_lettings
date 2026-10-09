@@ -1,7 +1,75 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, Building2, ArrowRight } from 'lucide-react';
 import { NAV_LINKS, SERVICES } from '@/lib/data';
+import { EXPLORE_GROUPS } from '@/lib/nav';
+
+function ExploreMenu({ active }: { active: boolean }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const location = useLocation();
+
+  useEffect(() => { setOpen(false); }, [location.pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setOpen(false); btnRef.current?.focus(); }
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <div
+      ref={wrapRef}
+      className="relative"
+      onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false); }}
+    >
+      <button
+        ref={btnRef}
+        type="button"
+        aria-expanded={open}
+        aria-controls="explore-menu"
+        onClick={() => setOpen((v) => !v)}
+        className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-colors duration-300 ${
+          active || open ? 'text-gold-300' : 'text-ivory-100 hover:text-gold-300'
+        }`}
+      >
+        Explore
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
+      </button>
+      {open && (
+        <div id="explore-menu" className="absolute top-full -left-24 pt-4 w-[44rem] max-w-[calc(100vw-3rem)]">
+          <div className="bg-navy-900 border border-navy-700 shadow-2xl p-6 grid grid-cols-2 gap-x-8 gap-y-6 animate-fade-in">
+            {EXPLORE_GROUPS.map((g) => (
+              <div key={g.heading}>
+                <div className="label-text text-gold-300 mb-3">{g.heading}</div>
+                <ul className="space-y-1.5">
+                  {g.links.map((l) => (
+                    <li key={l.path}>
+                      <Link to={l.path} className="block py-1 text-sm text-ivory-100 hover:text-gold-300 transition-colors">
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -23,6 +91,8 @@ export function Header() {
   const isActive = (path: string) =>
     location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
 
+  const exploreActive = EXPLORE_GROUPS.some((g) => g.links.some((l) => l.path !== '/properties' && isActive(l.path)));
+
   return (
     <>
       <header
@@ -32,7 +102,7 @@ export function Header() {
             : 'bg-navy-950/40 backdrop-blur-sm'
         }`}
       >
-        <div className="section-padding">
+        <div className="px-6 md:px-8 xl:px-20 2xl:px-24">
           <div className="flex items-center justify-between h-20 max-w-9xl mx-auto">
             <Link to="/" className="flex items-center gap-3 group">
               <div className="w-10 h-10 bg-gold-400 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
@@ -48,11 +118,11 @@ export function Header() {
               </div>
             </Link>
 
-            <nav aria-label="Primary" className="hidden lg:flex items-center gap-8">
-              {NAV_LINKS.map((link) =>
-                link.children ? (
+            <nav aria-label="Primary" className="hidden lg:flex items-center gap-5 xl:gap-8">
+              {NAV_LINKS.map((link) => (
+                <Fragment key={link.path}>
+                {link.children ? (
                   <div
-                    key={link.path}
                     className="relative"
                     onMouseEnter={() => setServicesOpen(true)}
                     onMouseLeave={() => setServicesOpen(false)}
@@ -93,7 +163,6 @@ export function Header() {
                   </div>
                 ) : (
                   <Link
-                    key={link.path}
                     to={link.path}
                     className={`text-sm font-medium tracking-wide transition-colors duration-300 ${
                       isActive(link.path) ? 'text-gold-300' : 'text-ivory-100 hover:text-gold-300'
@@ -101,14 +170,16 @@ export function Header() {
                   >
                     {link.label}
                   </Link>
-                )
-              )}
+                )}
+                {link.path === '/properties' && <ExploreMenu active={exploreActive} />}
+                </Fragment>
+              ))}
             </nav>
 
             <div className="hidden lg:flex items-center gap-4">
               <Link
                 to="/portal/landlord"
-                className="text-sm text-ivory-200 hover:text-gold-300 transition-colors duration-300"
+                className="text-sm whitespace-nowrap text-ivory-200 hover:text-gold-300 transition-colors duration-300"
               >
                 Portal Login
               </Link>
@@ -159,6 +230,26 @@ export function Header() {
                   )}
                 </div>
               ))}
+              <div className="border-b border-navy-700">
+                <details className="group">
+                  <summary className="py-3 text-lg text-ivory-50 font-serif cursor-pointer list-none flex items-center justify-between">
+                    Explore
+                    <ChevronDown className="w-4 h-4 group-open:rotate-180 transition-transform" aria-hidden="true" />
+                  </summary>
+                  <div className="pb-3 pl-4 space-y-4">
+                    {EXPLORE_GROUPS.map((g) => (
+                      <div key={g.heading}>
+                        <div className="label-text text-gold-300 mb-1">{g.heading}</div>
+                        {g.links.map((l) => (
+                          <Link key={l.path} to={l.path} className="block py-2 text-sm text-stone-300 hover:text-gold-300">
+                            {l.label}
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              </div>
               <Link
                 to="/portal/landlord"
                 className="mt-4 py-3 text-ivory-200 border-b border-navy-700"

@@ -1,7 +1,5 @@
-﻿export default function TenantPage() {
-  return (
-    <div>
-      <h1>tenant</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function PortalsTenantPage() {
+  return <ArchitecturePage path="/portals/tenant" />;
 }

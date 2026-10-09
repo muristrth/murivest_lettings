@@ -1,7 +1,5 @@
-﻿export default function PropertyManagementPage() {
-  return (
-    <div>
-      <h1>property-management</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function PropertyManagementPage() {
+  return <ArchitecturePage path="/property-management" />;
 }

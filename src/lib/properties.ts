@@ -2,95 +2,61 @@ import type { ComponentType } from 'react';
 import {
   Briefcase, Building2, Layers, MapPin, ShoppingCart, Store, Warehouse,
 } from 'lucide-react';
-import {
-  formatKES,
-  type PropertyListing,
-} from '@/lib/data';
-import { COMMERCIAL_SUBTYPES, type SanityProperty } from '@/lib/sanity';
+import { formatKES, COMMERCIAL_SUBTYPES, type PropertyListing } from '@/lib/data';
+import type { SanityProperty } from '@/lib/sanity';
 
-/* ============================================================================
-   SECTION 0 — COMMERCIAL-ONLY MANDATE CONFIGURATION
-   ========================================================================== */
+/**
+ * Shared presentation helpers for property listings.
+ *
+ * Nothing here changes data: every helper derives display values from fields
+ * that already exist on PropertyListing. Used by the /properties pages, the
+ * shared PropertyBriefCard, and the listing sections on architecture pages.
+ */
 
-export interface MandateMarket {
+/* --- Location → country label (derived from the free-text location only) ----- */
+
+export interface LocationMarket {
   code: string;
   label: string;
   shortLabel: string;
-  blurb: string;
 }
 
-export const MANDATE_MARKETS: MandateMarket[] = [
-  {
-    code: 'GB',
-    label: 'United Kingdom',
-    shortLabel: 'UK',
-    blurb:
-      'A global financial and professional-services centre, with London among the world’s most liquid commercial property markets.',
-  },
-  {
-    code: 'AE',
-    label: 'United Arab Emirates',
-    shortLabel: 'UAE',
-    blurb:
-      'A major international trade, logistics and business hub, with Dubai and Abu Dhabi serving as regional headquarters locations.',
-  },
-  {
-    code: 'KE',
-    label: 'Kenya',
-    shortLabel: 'Kenya',
-    blurb:
-      'East Africa’s principal commercial and diplomatic centre, with Nairobi hosting regional headquarters of multinationals, NGOs and institutions.',
-  },
-  {
-    code: 'ZA',
-    label: 'South Africa',
-    shortLabel: 'South Africa',
-    blurb:
-      'Africa’s most established commercial property market, with Johannesburg and Cape Town as primary corporate locations.',
-  },
-  {
-    code: 'US',
-    label: 'United States',
-    shortLabel: 'US',
-    blurb:
-      'The world’s largest commercial property market, spanning premier office, retail and industrial locations across major metropolitan areas.',
-  },
+export const LOCATION_MARKETS: LocationMarket[] = [
+  { code: 'KE', label: 'Kenya', shortLabel: 'Kenya' },
+  { code: 'GB', label: 'United Kingdom', shortLabel: 'UK' },
+  { code: 'AE', label: 'United Arab Emirates', shortLabel: 'UAE' },
+  { code: 'ZA', label: 'South Africa', shortLabel: 'South Africa' },
+  { code: 'US', label: 'United States', shortLabel: 'US' },
 ];
 
-const MARKET_MATCHERS: Record<string, string[]> = {
-  GB: [
-    'united kingdom', ' uk', ' uk,', ', uk', 'london', 'manchester',
-    'birmingham', 'edinburgh', 'england', 'scotland', 'leeds', 'bristol',
-    'glasgow', 'liverpool', 'reading', 'cambridge', 'oxford',
-  ],
-  AE: [
-    'uae', 'united arab emirates', 'dubai', 'abu dhabi', 'sharjah',
-    'ajman', 'ras al khaimah', 'fujairah',
-  ],
-  KE: [
-    'kenya', 'nairobi', 'mombasa', 'kisumu', 'westlands', 'kilimani',
-    'karen', 'upperhill', 'upper hill', 'cbd', 'lolwe', 'mlolongo',
-  ],
-  ZA: [
-    'south africa', ' johannesburg', 'cape town', 'durban', 'pretoria',
-    'sandton', ' gauteng', 'midrand', 'bloemfontein',
-  ],
-  US: [
-    'united states', ' usa', ' u.s.', 'new york', 'manhattan', ' miami',
-    ' los angeles', ' chicago', ' houston', ' atlanta', 'boston',
-    'san francisco', 'seattle', 'dallas',
-  ],
+const MARKET_TOKENS: Record<string, string[]> = {
+  KE: ['kenya', 'nairobi', 'mombasa', 'kisumu', 'naivasha', 'westlands', 'kilimani', 'karen', 'upperhill', 'upper hill', 'cbd', 'lolwe', 'mlolongo'],
+  GB: ['united kingdom', 'uk', 'london', 'manchester', 'birmingham', 'edinburgh', 'england', 'scotland', 'leeds', 'bristol', 'glasgow', 'liverpool'],
+  AE: ['uae', 'united arab emirates', 'dubai', 'abu dhabi', 'sharjah', 'ajman', 'ras al khaimah', 'fujairah'],
+  ZA: ['south africa', 'johannesburg', 'cape town', 'durban', 'pretoria', 'sandton', 'gauteng', 'midrand'],
+  US: ['united states', 'usa', 'new york', 'manhattan', 'miami', 'los angeles', 'chicago', 'houston', 'atlanta', 'boston', 'san francisco', 'seattle', 'dallas'],
 };
 
-export function detectMarket(location: string | null | undefined): MandateMarket | null {
+function escapeRe(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** True when the free-text location contains any token as a whole word/phrase. */
+export function locationHasToken(location: string | null | undefined, tokens: string[]): boolean {
+  if (!location) return false;
+  const hay = location.toLowerCase();
+  return tokens.some((t) => new RegExp(`(^|[^a-z])${escapeRe(t.toLowerCase())}([^a-z]|$)`).test(hay));
+}
+
+export function detectMarket(location: string | null | undefined): LocationMarket | null {
   if (!location) return null;
-  const haystack = ` ${location.toLowerCase()}`;
-  for (const market of MANDATE_MARKETS) {
-    const tokens = MARKET_MATCHERS[market.code] || [];
-    if (tokens.some((t) => haystack.includes(t))) return market;
+  for (const m of LOCATION_MARKETS) {
+    if (locationHasToken(location, MARKET_TOKENS[m.code] || [])) return m;
   }
   return null;
 }
+
+/* --- Commercial guard ------------------------------------------------------ */
 
 export const COMMERCIAL_SUBTYPE_SET = new Set<string>([
   'Office', 'Office Floor', 'Office to Buy', 'Retail', 'Shop', 'Stall',
@@ -104,30 +70,32 @@ export function isCommercial(p: Pick<PropertyListing, 'type' | 'subtype'>): bool
   return COMMERCIAL_SUBTYPE_SET.has(p.subtype);
 }
 
+/* --- Classification -------------------------------------------------------- */
+
 export const SUBTYPE_CLASSIFICATION: Record<string, string> = {
-  'Office': 'OFFICE',
-  'Office Floor': 'OFFICE FLOOR',
-  'Office to Buy': 'OFFICE — FREEHOLD',
-  'Serviced Office': 'SERVICED OFFICE',
-  'Business Park': 'BUSINESS PARK',
-  'Retail': 'RETAIL',
-  'Shop': 'RETAIL',
-  'Stall': 'RETAIL',
-  'Mall Space': 'RETAIL — MALL SPACE',
-  'Showroom': 'SHOWROOM',
-  'Warehouse': 'WAREHOUSE',
-  'Godown': 'WAREHOUSE',
-  'Industrial': 'INDUSTRIAL',
-  'Mixed Use': 'MIXED USE',
-  'Commercial': 'COMMERCIAL PROPERTY',
-  'Commercial Plot': 'COMMERCIAL LAND',
-  'Commercial Land': 'COMMERCIAL LAND',
-  'Storage': 'STORAGE',
+  'Office': 'Office',
+  'Office Floor': 'Office floor',
+  'Office to Buy': 'Office, freehold',
+  'Serviced Office': 'Serviced office',
+  'Business Park': 'Business park',
+  'Retail': 'Retail',
+  'Shop': 'Retail',
+  'Stall': 'Retail',
+  'Mall Space': 'Retail, mall space',
+  'Showroom': 'Showroom',
+  'Warehouse': 'Warehouse',
+  'Godown': 'Warehouse',
+  'Industrial': 'Industrial',
+  'Mixed Use': 'Mixed use',
+  'Commercial': 'Commercial property',
+  'Commercial Plot': 'Commercial land',
+  'Commercial Land': 'Commercial land',
+  'Storage': 'Storage',
 };
 
 export function classificationFor(subtype: string | null | undefined): string {
-  if (!subtype) return 'COMMERCIAL PROPERTY';
-  return SUBTYPE_CLASSIFICATION[subtype] ?? 'COMMERCIAL PROPERTY';
+  if (!subtype) return 'Commercial property';
+  return SUBTYPE_CLASSIFICATION[subtype] ?? 'Commercial property';
 }
 
 export const SUBTYPE_ICONS: Record<string, ComponentType<{ className?: string }>> = {
@@ -151,32 +119,16 @@ export const SUBTYPE_ICONS: Record<string, ComponentType<{ className?: string }>
   'Storage': Warehouse,
 };
 
-import {
-  Briefcase, Building2, Layers, MapPin, ShoppingCart, Store, Warehouse,
-} from 'lucide-react';
-
 export interface CommercialCategory {
   label: string;
   subtypes: string[];
 }
 
 export const COMMERCIAL_CATEGORIES: CommercialCategory[] = [
-  {
-    label: 'Office',
-    subtypes: ['Office', 'Office Floor', 'Office to Buy', 'Serviced Office', 'Business Park'],
-  },
-  {
-    label: 'Retail',
-    subtypes: ['Retail', 'Shop', 'Stall', 'Mall Space', 'Showroom'],
-  },
-  {
-    label: 'Warehouse & Industrial',
-    subtypes: ['Warehouse', 'Industrial', 'Godown', 'Storage'],
-  },
-  {
-    label: 'Mixed Use',
-    subtypes: ['Mixed Use'],
-  },
+  { label: 'Office', subtypes: ['Office', 'Office Floor', 'Office to Buy', 'Serviced Office', 'Business Park'] },
+  { label: 'Retail', subtypes: ['Retail', 'Shop', 'Stall', 'Mall Space', 'Showroom'] },
+  { label: 'Warehouse & Industrial', subtypes: ['Warehouse', 'Industrial', 'Godown', 'Storage'] },
+  { label: 'Mixed Use', subtypes: ['Mixed Use'] },
 ];
 
 export function categoryForSubtype(subtype: string | null | undefined): CommercialCategory | null {
@@ -184,106 +136,7 @@ export function categoryForSubtype(subtype: string | null | undefined): Commerci
   return COMMERCIAL_CATEGORIES.find((c) => c.subtypes.includes(subtype)) ?? null;
 }
 
-export interface OccupierProfile {
-  heading: string;
-  intro: string;
-  points: string[];
-}
-
-export function occupierProfileFor(
-  subtype: string | null | undefined,
-  listingType: string,
-): OccupierProfile | null {
-  const s = (subtype || '').toLowerCase();
-  const arrangement = listingType === 'sale'
-    ? 'acquisition of the property'
-    : 'occupation of the premises under lease';
-
-  if (s.includes('office')) {
-    return {
-      heading: 'Occupier Profile',
-      intro:
-        'On the basis of its office classification and the particulars stated above, ' +
-        'the property may be suitable for consideration by organisations seeking ' +
-        `${arrangement}:`,
-      points: [
-        'Multinational corporations and regional headquarters establishing or consolidating a corporate office presence',
-        'Financial institutions, professional-services and advisory firms requiring a representative business address',
-        'NGOs, development organisations and diplomatic missions seeking staffed office premises',
-        'Corporate occupiers requiring identifiable, professionally managed premises in an established business location',
-      ],
-    };
-  }
-  if (s.includes('retail') || s.includes('shop') || s.includes('stall') || s.includes('mall') || s.includes('showroom')) {
-    return {
-      heading: 'Occupier Profile',
-      intro:
-        'On the basis of its retail classification and the particulars stated above, ' +
-        'the property may be suitable for consideration by organisations seeking ' +
-        `${arrangement}:`,
-      points: [
-        'Retailers and consumer brands seeking a trading location within an established commercial catchment',
-        'Showroom, trade-counter and direct-to-consumer operators requiring visible, accessible premises',
-        'Franchise operators and regional distributors establishing a physical market presence',
-        'Businesses seeking premises where footfall and commercial visibility are material to operations',
-      ],
-    };
-  }
-  if (s.includes('warehouse') || s.includes('industrial') || s.includes('godown') || s.includes('storage')) {
-    return {
-      heading: 'Occupier Profile',
-      intro:
-        'On the basis of its warehouse / industrial classification and the particulars ' +
-        'stated above, the property may be suitable for consideration by organisations ' +
-        `seeking ${arrangement}:`,
-      points: [
-        'Logistics, distribution and e-commerce operators requiring storage and dispatch capacity',
-        'Manufacturing, light-industrial and production occupiers requiring operational premises',
-        'Importers, wholesalers and trading companies requiring bonded or general storage capacity',
-        'Organisations requiring warehouse premises within an established industrial or logistics corridor',
-      ],
-    };
-  }
-  if (s.includes('mixed')) {
-    return {
-      heading: 'Occupier Profile',
-      intro:
-        'On the basis of its mixed-use classification and the particulars stated above, ' +
-        'the property may be suitable for consideration by organisations seeking ' +
-        `${arrangement}:`,
-      points: [
-        'Occupiers requiring combined commercial, office or retail usage within a single asset',
-        'Investors and owner-occupiers seeking income or operational flexibility across more than one use class',
-        'Organisations evaluating premises that can adapt as operational requirements change',
-      ],
-    };
-  }
-  if (s.includes('plot') || s.includes('land')) {
-    return {
-      heading: 'Potential Use',
-      intro:
-        'On the basis of its commercial land classification and the particulars stated ' +
-        'above, the site may be suitable for consideration by parties seeking development ' +
-        'or land-banking opportunities:',
-      points: [
-        'Developers and investors evaluating commercial development sites',
-        'Organisations seeking a land holding in a commercial location, subject to planning and due diligence',
-      ],
-    };
-  }
-  return {
-    heading: 'Potential Use',
-    intro:
-      'On the basis of the particulars stated above, the property may be suitable for ' +
-      `consideration by organisations seeking ${arrangement}, subject to the specific ` +
-      'operational requirements of the occupier and formal due diligence.',
-    points: [],
-  };
-}
-
-/* ============================================================================
-   SECTION 1 — SHARED HELPERS
-   ========================================================================== */
+/* --- Data-conversion boundary (unchanged) ----------------------------------- */
 
 export function sanityToListing(p: SanityProperty): PropertyListing {
   return {
@@ -309,74 +162,107 @@ export function sanityToListing(p: SanityProperty): PropertyListing {
   };
 }
 
-export function commercialTerms(property: PropertyListing): {
-  primary: string;
-  secondary: string | null;
-} {
+/* --- Commercial terms --------------------------------------------------------
+   Rent, price and POA are kept distinct. displayPrice (CMS-authored) always
+   wins. Numeric values use the existing formatKES convention. No rent period
+   or currency conversion is assumed, because the data does not carry one.
+--------------------------------------------------------------------------- */
+
+export interface CommercialTerms {
+  kind: 'rent' | 'price' | 'poa';
+  label: string;
+  value: string;
+}
+
+export function commercialTerms(property: PropertyListing): CommercialTerms {
+  const sale = property.listingType === 'sale';
   if (property.displayPrice) {
-    return { primary: property.displayPrice, secondary: null };
+    return { kind: sale ? 'price' : 'rent', label: sale ? 'Price' : 'Rent', value: property.displayPrice };
   }
-  if (property.listingType === 'sale' && property.price != null) {
-    return { primary: formatKES(property.price), secondary: 'Asking sale price' };
+  if (sale && property.price != null && property.price > 0) {
+    return { kind: 'price', label: 'Price', value: formatKES(property.price) };
   }
-  if (property.rent != null) {
-    return { primary: formatKES(property.rent), secondary: 'Asking rent, per month' };
+  if (!sale && property.rent != null && property.rent > 0) {
+    return { kind: 'rent', label: 'Rent', value: formatKES(property.rent) };
   }
-  return { primary: 'Price on application', secondary: 'Commercial terms available on request' };
+  return { kind: 'poa', label: sale ? 'Price' : 'Rent', value: 'Price on application' };
 }
 
 export function availabilityTone(availability: string): { chip: string; dot: string } {
   switch (availability) {
     case 'Available':
-      return { chip: 'bg-forest-500/90 text-white', dot: 'bg-forest-400' };
+      return { chip: 'bg-forest-700 text-white', dot: 'bg-forest-300' };
     case 'Under Application':
-      return { chip: 'bg-gold-400/90 text-navy-950', dot: 'bg-gold-400' };
+      return { chip: 'bg-gold-400 text-navy-950', dot: 'bg-navy-900' };
     default:
-      return { chip: 'bg-navy-900/90 text-ivory-50', dot: 'bg-stone-400' };
+      return { chip: 'bg-navy-900 text-ivory-50', dot: 'bg-stone-400' };
   }
 }
 
 export function listingTypeLabel(listingType: string): string {
-  return listingType === 'sale' ? 'For Sale' : 'For Lease';
+  return listingType === 'sale' ? 'For sale' : 'For lease';
 }
+
+/* --- SEO builders (real fields only) ---------------------------------------- */
 
 export function truncateWords(text: string, max: number): string {
   if (text.length <= max) return text;
   const cut = text.slice(0, max);
   const lastSpace = cut.lastIndexOf(' ');
-  return (lastSpace > 40 ? cut.slice(0, lastSpace) : cut).trimEnd() + '…';
+  return (lastSpace > 20 ? cut.slice(0, lastSpace) : cut).trimEnd();
 }
 
-export function buildMetaDescription(
-  property: PropertyListing,
-  market: MandateMarket | null,
-): string {
-  const parts: string[] = [];
-  const intent = property.listingType === 'sale' ? 'for sale' : 'for lease';
-  parts.push(`${property.subtype} ${intent} in ${property.location}`);
-  if (property.area) parts.push(property.area);
-  if (property.availability === 'Available') parts.push('currently available');
-  if (market) parts.push(`Managed within Murivest's ${market.label} mandate portfolio`);
-
-  let body = parts.join('. ');
-  const suffix = ' | Murivest';
-  const budget = 160 - suffix.length;
-  if (body.length > budget) body = truncateWords(body, budget - 1);
-  if (!/[.…]$/.test(body)) body += '.';
-  return body + suffix;
-}
-
+/** "[Type] in [Location] | Murivest", extended to "Murivest Lettings" when room allows (<= 60 chars). */
 export function buildSeoTitle(property: PropertyListing): string {
-  const suffix = ' | Murivest';
-  const budget = 58 - suffix.length;
   let core = `${property.subtype} in ${property.location}`;
-  if (core.length > budget) core = truncateWords(core, budget - 1);
-  return core + suffix;
+  const short = ' | Murivest';
+  const long = ' | Murivest Lettings';
+  if (core.length + short.length > 60) core = truncateWords(core, 60 - short.length);
+  return core.length + long.length <= 60 ? core + long : core + short;
 }
 
+/**
+ * Unique meta description (150-160 chars) from real fields: subtype, lease or
+ * sale, location, size (if present), availability, plus a generic service tail.
+ */
+export function buildMetaDescription(property: PropertyListing): string {
+  const intent = property.listingType === 'sale' ? 'for sale' : 'for lease';
+  let head = `${property.subtype} ${intent} in ${property.location}`;
+  if (property.area) head += `, ${property.area}`;
+  head += `. Status: ${property.availability.toLowerCase()}.`;
+  const tails = [
+    ' Request the property brief or arrange a viewing with Murivest Lettings in Nairobi.',
+    ' Request the property brief or arrange a viewing with Murivest Lettings.',
+    ' Request the property brief with Murivest Lettings.',
+    ' Enquire with Murivest Lettings.',
+  ];
+  if (head.length > 130) head = truncateWords(head, 128).replace(/[.,;:]$/, '') + '.';
+  let out = head;
+  for (const t of tails) {
+    if ((head + t).length <= 160) { out = head + t; break; }
+  }
+  return out;
+}
+
+/** Alt text: "[Type] in [Location] — Murivest Lettings" (later images numbered). */
 export function buildAltText(property: PropertyListing, index: number): string {
   const base = `${property.subtype} in ${property.location} — Murivest Lettings`;
   return index === 0 ? base : `${base}, image ${index + 1}`;
+}
+
+/* --- Listing-section matching (architecture pages) --------------------------- */
+
+export function matchesListing(
+  p: PropertyListing,
+  spec: { subtypes?: string[]; tokens?: string[]; listingType?: 'lease' | 'sale' },
+): boolean {
+  if (!isCommercial(p)) return false;
+  if (spec.listingType && p.listingType !== spec.listingType) return false;
+  if (spec.subtypes && spec.subtypes.length > 0 && !spec.subtypes.includes(p.subtype)) return false;
+  if (spec.tokens && spec.tokens.length > 0) {
+    if (!locationHasToken(`${p.location} ${p.title}`, spec.tokens)) return false;
+  }
+  return true;
 }
 
 export { COMMERCIAL_SUBTYPES };
