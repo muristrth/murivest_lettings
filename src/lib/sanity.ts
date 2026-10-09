@@ -3,7 +3,6 @@
 const sanityProjectId = import.meta.env.VITE_SANITY_PROJECT_ID || '';
 const sanityDataset = import.meta.env.VITE_SANITY_DATASET || 'production';
 const sanityApiVersion = import.meta.env.VITE_SANITY_API_VERSION || '2024-01-01';
-const sanityApiToken = import.meta.env.VITE_SANITY_API_TOKEN || '';
 
 export const isSanityConfigured = Boolean(sanityProjectId && sanityProjectId !== 'your_project_id');
 
@@ -13,7 +12,7 @@ export const sanityClient = isSanityConfigured
       dataset: sanityDataset,
       apiVersion: sanityApiVersion,
       useCdn: true,
-      token: sanityApiToken || undefined,
+      // No token: this client runs in the browser and only reads the public dataset.
     })
   : null;
 
