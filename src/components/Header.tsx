@@ -48,7 +48,7 @@ export function Header() {
               </div>
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-8">
+            <nav aria-label="Primary" className="hidden lg:flex items-center gap-8">
               {NAV_LINKS.map((link) =>
                 link.children ? (
                   <div
@@ -56,6 +56,8 @@ export function Header() {
                     className="relative"
                     onMouseEnter={() => setServicesOpen(true)}
                     onMouseLeave={() => setServicesOpen(false)}
+                    onFocus={() => setServicesOpen(true)}
+                    onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setServicesOpen(false); }}
                   >
                     <Link
                       to={link.path}
@@ -119,7 +121,10 @@ export function Header() {
             <button
               className="lg:hidden text-ivory-50 p-2"
               onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Toggle menu"
+              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav"
+              type="button"
             >
               {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -130,7 +135,7 @@ export function Header() {
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-navy-950/95 backdrop-blur-md pt-20 overflow-y-auto">
-            <nav className="section-padding py-8 flex flex-col gap-1">
+            <nav id="mobile-nav" aria-label="Mobile" className="section-padding py-8 flex flex-col gap-1">
               {NAV_LINKS.map((link) => (
                 <div key={link.path}>
                   <Link

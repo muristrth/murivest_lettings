@@ -1,3 +1,4 @@
+import { Seo } from '@/components/Seo';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -25,6 +26,8 @@ export function PortalLayout({ role, userName, navItems, children }: PortalLayou
   const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
 
   return (
+    <>
+    <Seo title={`${roleLabel} Portal`} description={`Murivest Lettings ${roleLabel.toLowerCase()} portal preview.`} path={location.pathname} noindex />
     <div className="min-h-screen bg-stone-50 flex">
       {/* Sidebar */}
       <aside
@@ -126,6 +129,7 @@ export function PortalLayout({ role, userName, navItems, children }: PortalLayou
         <main className="flex-1 p-6 lg:p-8">{children}</main>
       </div>
     </div>
+    </>
   );
 }
 
