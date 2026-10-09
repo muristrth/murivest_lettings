@@ -221,12 +221,18 @@ export function HomePage() {
                 className="group card-institutional overflow-hidden"
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-stone-200">
-                  <img
-                    src={property.images[0].url}
-                    alt={property.images[0].alt}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                  />
+                  {property.images[0]?.url ? (
+                    <img
+                      src={property.images[0].url}
+                      alt={(property.images[0].alt || property.title)}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-xs tracking-[0.2em] text-stone-400">
+                      {property.type}
+                    </div>
+                  )}
                   <div className="absolute top-4 left-4">
                     <span className="inline-flex items-center px-3 py-1.5 text-xs font-medium bg-white/95 text-navy-900 backdrop-blur-sm">
                       {property.type}
