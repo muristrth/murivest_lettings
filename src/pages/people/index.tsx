@@ -1,7 +1,5 @@
-﻿export default function PeoplePage() {
-  return (
-    <div>
-      <h1>people</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function PeoplePage() {
+  return <ArchitecturePage path="/people" />;
 }

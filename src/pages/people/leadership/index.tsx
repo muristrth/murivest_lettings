@@ -1,7 +1,5 @@
-﻿export default function LeadershipPage() {
-  return (
-    <div>
-      <h1>leadership</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function PeopleLeadershipPage() {
+  return <ArchitecturePage path="/people/leadership" />;
 }

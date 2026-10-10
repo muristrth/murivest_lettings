@@ -1,7 +1,5 @@
-﻿export default function MarketOutlooksPage() {
-  return (
-    <div>
-      <h1>market-outlooks</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function ResearchMarketOutlooksPage() {
+  return <ArchitecturePage path="/research/market-outlooks" />;
 }

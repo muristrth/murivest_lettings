@@ -1,7 +1,5 @@
-﻿export default function PortalsPage() {
-  return (
-    <div>
-      <h1>portals</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function PortalsPage() {
+  return <ArchitecturePage path="/portals" />;
 }

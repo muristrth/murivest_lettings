@@ -1,7 +1,5 @@
-﻿export default function RealEstateAdvisoryPage() {
-  return (
-    <div>
-      <h1>real-estate-advisory</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function ServicesRealEstateAdvisoryPage() {
+  return <ArchitecturePage path="/services/real-estate-advisory" />;
 }

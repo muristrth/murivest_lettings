@@ -1,7 +1,5 @@
-﻿export default function AdvisorsPage() {
-  return (
-    <div>
-      <h1>advisors</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function PeopleAdvisorsPage() {
+  return <ArchitecturePage path="/people/advisors" />;
 }

@@ -150,6 +150,22 @@ export function AboutPage() {
   );
 }
 
+function handleContactSubmit(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
+  const d = new FormData(e.currentTarget);
+  const g = (k: string) => String(d.get(k) || '').trim();
+  const body = [
+    `Name: ${g('first')} ${g('last')}`,
+    `Email: ${g('email')}`,
+    `Phone: ${g('phone')}`,
+    `I am a: ${g('role')}`,
+    `Service of interest: ${g('service')}`,
+    '',
+    g('message'),
+  ].join('\n');
+  window.location.href = `mailto:capital@murivest.com?subject=${encodeURIComponent('Website enquiry - ' + g('role'))}&body=${encodeURIComponent(body)}`;
+}
+
 export function ContactPage() {
   return (
     <>
@@ -172,30 +188,30 @@ export function ContactPage() {
             {/* Form */}
             <div>
               <h2 className="font-serif text-2xl text-navy-900 mb-6">Request a consultation</h2>
-              <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); }}>
+              <form className="space-y-5" onSubmit={handleContactSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="label-text text-stone-500 mb-2 block">First Name</label>
-                    <input type="text" className="input-field" placeholder="John" required />
+                    <label htmlFor="contact-first" className="label-text text-stone-500 mb-2 block">First Name</label>
+                    <input id="contact-first" name="first" type="text" className="input-field" placeholder="John" required />
                   </div>
                   <div>
-                    <label className="label-text text-stone-500 mb-2 block">Last Name</label>
-                    <input type="text" className="input-field" placeholder="Mwangi" required />
+                    <label htmlFor="contact-last" className="label-text text-stone-500 mb-2 block">Last Name</label>
+                    <input id="contact-last" name="last" type="text" className="input-field" placeholder="Mwangi" required />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="label-text text-stone-500 mb-2 block">Email</label>
-                    <input type="email" className="input-field" placeholder="john@example.com" required />
+                    <label htmlFor="contact-email" className="label-text text-stone-500 mb-2 block">Email</label>
+                    <input id="contact-email" name="email" type="email" className="input-field" placeholder="john@example.com" required />
                   </div>
                   <div>
-                    <label className="label-text text-stone-500 mb-2 block">Phone</label>
-                    <input type="tel" className="input-field" placeholder="07XX XXX XXX" />
+                    <label htmlFor="contact-phone" className="label-text text-stone-500 mb-2 block">Phone</label>
+                    <input id="contact-phone" name="phone" type="tel" className="input-field" placeholder="07XX XXX XXX" />
                   </div>
                 </div>
                 <div>
-                  <label className="label-text text-stone-500 mb-2 block">I am a...</label>
-                  <select className="input-field" required>
+                  <label htmlFor="contact-role" className="label-text text-stone-500 mb-2 block">I am a...</label>
+                  <select id="contact-role" name="role" className="input-field" required>
                     <option value="">Select...</option>
                     <option>Landlord / Property Owner</option>
                     <option>Tenant</option>
@@ -205,8 +221,8 @@ export function ContactPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="label-text text-stone-500 mb-2 block">Service of Interest</label>
-                  <select className="input-field">
+                  <label htmlFor="contact-service" className="label-text text-stone-500 mb-2 block">Service of Interest</label>
+                  <select id="contact-service" name="service" className="input-field">
                     <option value="">Select a service...</option>
                     <option>Property Management</option>
                     <option>Leasing & Tenant Placement</option>
@@ -218,15 +234,15 @@ export function ContactPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="label-text text-stone-500 mb-2 block">Message</label>
-                  <textarea className="input-field min-h-[120px] resize-y" placeholder="Tell us about your property or requirements..." required />
+                  <label htmlFor="contact-message" className="label-text text-stone-500 mb-2 block">Message</label>
+                  <textarea id="contact-message" name="message" className="input-field min-h-[120px] resize-y" placeholder="Tell us about your property or requirements..." required />
                 </div>
                 <button type="submit" className="btn-primary w-full">
                   Send Message
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <p className="text-xs text-stone-400 text-center">
-                  We typically respond within one business day.
+                  Sending opens your email app with this message addressed to capital@murivest.com. You can also call 0115 277 610.
                 </p>
               </form>
             </div>

@@ -17,6 +17,8 @@ interface SeoProps {
   path: string;
   pageType?: string;
   ogType?: string;
+  /** Absolute image URL for og:image / twitter:image (optional). */
+  ogImage?: string;
   noindex?: boolean;
   breadcrumbs?: { name: string; path: string }[];
   serviceSchema?: {
@@ -33,12 +35,13 @@ export function Seo({
   path,
   pageType,
   ogType,
+  ogImage,
   noindex,
   breadcrumbs,
   serviceSchema,
 }: SeoProps) {
   useEffect(() => {
-    setDocumentMetadata({ title, description, path, ogType, noindex });
+    setDocumentMetadata({ title, description, path, ogType, ogImage, noindex });
 
     const nodes = [
       generateOrganizationSchema(),
@@ -62,7 +65,7 @@ export function Seo({
     }
 
     injectJsonLd(buildGraph(nodes));
-  }, [title, description, path, pageType, ogType, noindex, breadcrumbs, serviceSchema]);
+  }, [title, description, path, pageType, ogType, ogImage, noindex, breadcrumbs, serviceSchema]);
 
   return null;
 }

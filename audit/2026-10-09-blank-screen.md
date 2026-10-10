@@ -1,0 +1,9 @@
+# Blank white screen diagnosis (2026-10-09)
+
+- CONFIRMED root cause (live): home page `src/pages/HomePage.tsx` rendered `property.images[0].url` for each featured listing. At least one live featured `propertylet` has no image, so React threw `TypeError: Cannot read properties of undefined (reading 'url')`. With no error boundary React unmounted the whole tree -> `#root` empty -> white page. Reproduced against https://lettings.murivest.com in headless Edge (ROOT html length 0, same TypeError in index-DDyB-V4j.js) and locally by feeding real Sanity data to dev (HomePage.tsx:485) .
+- Why localhost differs: localhost origins are not in the Sanity CORS list, and the VITE_SANITY_API_TOKEN sent by the client is rejected (401 project user not found), so the featured query failed (caught) and the page rendered with no listings; headless Edge showed a rendered home page on dev (5173/5174) and preview. If Mark still sees blank on localhost: UNVERIFIED (check browser console).
+- vercel.json SPA rewrite, base path, router, root element, and Sanity init with missing env: checked, not the cause (build and all routes render).
+- Fix commits on branch: guard in HomePage (placeholder when no image); top-level ErrorBoundary (src/components/ErrorBoundary.tsx, wired in main.tsx); token removed from the browser client; vite envPrefix allow-list.
+- Verification: dev and `vite preview` with real data render the home page; Studio route loads.
+- Not run/clean: `npm run typecheck` fails on pre-existing syntax errors in src/pages/markets/europe/united-kingdom/index.tsx (unrelated; vite build is OK).
+- Vercel: nothing needs changing for the blank screen; deploy from the fixed branch after review. Remove VITE_SANITY_API_TOKEN from Vercel env (see token review).

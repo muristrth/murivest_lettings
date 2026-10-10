@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Building2, Mail, Phone, MapPin, ArrowRight } from 'lucide-react';
 import { SERVICES, SITE_CONFIG } from '@/lib/data';
 import { SITE_CONFIG as SC } from '@/lib/seo';
+import { EXPLORE_GROUPS } from '@/lib/nav';
 
 export function Footer() {
   return (
@@ -87,6 +88,21 @@ export function Footer() {
               </p>
             </div>
           </div>
+
+          <nav aria-label="Explore" className="border-t border-navy-700 pt-8 mb-8 grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {EXPLORE_GROUPS.map((g) => (
+              <div key={g.heading}>
+                <h4 className="label-text text-gold-300 mb-4">{g.heading}</h4>
+                <ul className="space-y-2">
+                  {g.links.map((l) => (
+                    <li key={l.path}>
+                      <Link to={l.path} className="text-sm text-stone-300 hover:text-gold-300 transition-colors">{l.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
 
           <div className="border-t border-navy-700 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-xs text-stone-500">

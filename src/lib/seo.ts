@@ -180,6 +180,10 @@ export function setDocumentMetadata(opts: {
   if (opts.ogImage) {
     setMeta('og:image', opts.ogImage, 'property');
     setMeta('twitter:image', opts.ogImage);
+  } else {
+    // Do not leak a previous page's image into the next SPA route.
+    document.querySelector('meta[property="og:image"]')?.remove();
+    document.querySelector('meta[name="twitter:image"]')?.remove();
   }
 
   let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;

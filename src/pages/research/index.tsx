@@ -1,7 +1,5 @@
-﻿export default function ResearchPage() {
-  return (
-    <div>
-      <h1>research</h1>
-    </div>
-  );
+import { ArchitecturePage } from '@/components/ArchitecturePage';
+
+export default function ResearchPage() {
+  return <ArchitecturePage path="/research" />;
 }
